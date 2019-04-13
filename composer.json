@@ -1,0 +1,41 @@
+{
+    "name": "larangular/web-service-client",
+    "description": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Simon Diaz",
+            "email": "sdiaz.sz@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3",
+        "illuminate/support": "^5.7",
+        "larangular/web-service-manager": "0.1.*",
+        "larangular/web-service-logger": "0.1.*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Larangular\\WebServiceClient\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Larangular\\WebServiceClient\\Tests\\": "./tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larangular\\WebServiceClient\\WebServiceClientServiceProvider"
+            ],
+
+            "aliases": {
+                "WSClientRequest": "Larangular\\WebServiceClient\\Facades\\WSClientRequest"
+            }
+        }
+    }
+}
