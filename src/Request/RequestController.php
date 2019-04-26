@@ -36,7 +36,7 @@ class RequestController {
         $request = $this->requestable->getTransformedData();
 
         return $this->getLog($this->objectId, $this->objectType, $this->clientService, $provider, $service, $url,
-            $request, $this->getExpireTime($service), static function ($response) use ($serviceCaller) {
+            $request, $this->getExpireTime($provider, $service), static function ($response) use ($serviceCaller) {
                 return $serviceCaller->isValidResponse($response);
                 //return $this->hasError($response);
             }, static function () use ($serviceCaller) {
