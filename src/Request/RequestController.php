@@ -49,7 +49,7 @@ class RequestController {
         return ($response == null || $response['response'] == null || !($errorCode === 0 || $errorCode === '0'));
     }
 
-    private function getExpireTime(strig $provider, string $service): Int {
+    private function getExpireTime(string $provider, string $service): Int {
         $expireTime = config($provider.'-services.services.'.$service.'.cache-expire', 0);
         return \is_int($expireTime)
             ? $expireTime
