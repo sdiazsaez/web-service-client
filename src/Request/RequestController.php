@@ -2,11 +2,8 @@
 
 namespace Larangular\WebServiceClient\Request;
 
-use Larangular\WebServiceManager\Register\ServiceDescriptor;
-use Larangular\WebServiceManager\Facades\ServiceRequest;
-use Larangular\WebServiceManager\Request\Requestable;
-use Larangular\WebServiceManager\Request\ServiceResponse;
 use Larangular\WebServiceLogger\WebServiceLog\WebServiceLoggeable;
+use Larangular\WebServiceManager\Request\Requestable;
 
 class RequestController {
 
@@ -28,11 +25,16 @@ class RequestController {
         return $this->request();
     }
 
+    public function hasError($response): bool {
+        $errorCode = $response['response']['Fault']['codigoError'];
+        return ($response == null || $response['response'] == null || !($errorCode === 0 || $errorCode === '0'));
+    }
+
     private function request() {
         $serviceCaller = $this->requestable->getServiceCaller();
         $provider = $this->requestable->descriptor->provider();
         $service = $this->requestable->descriptor->serviceName();
-        $url = $serviceCaller->service::WSDL_URL;
+        $url = $serviceCaller->service->url;
         $request = $this->requestable->getTransformedData();
 
         return $this->getLog($this->objectId, $this->objectType, $this->clientService, $provider, $service, $url,
@@ -40,17 +42,19 @@ class RequestController {
                 return $serviceCaller->isValidResponse($response);
                 //return $this->hasError($response);
             }, static function () use ($serviceCaller) {
-                return $serviceCaller->getResponse();
+                $response = $serviceCaller->getResponse();
+                return [
+                    'response'     => $response,
+                    'raw_request'  => $response->getServiceClient()
+                                               ->getLastRequest(),
+                    'raw_response' => $response->getServiceClient()
+                                               ->getLastResponse(),
+                ];
             });
     }
 
-    public function hasError($response): bool {
-        $errorCode = $response['response']['Fault']['codigoError'];
-        return ($response == null || $response['response'] == null || !($errorCode === 0 || $errorCode === '0'));
-    }
-
     private function getExpireTime(string $provider, string $service): Int {
-        $expireTime = config($provider.'-services.services.'.$service.'.cache-expire', 0);
+        $expireTime = config($provider . '-services.services.' . $service . '.cache-expire', 0);
         return \is_int($expireTime)
             ? $expireTime
             : 0;
